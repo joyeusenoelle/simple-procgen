@@ -1,4 +1,5 @@
 import random as r
+import sys
 
 def createDungeon(x=None, y=None, seed=None):
 	""" Initializes an x by y grid.
@@ -61,14 +62,41 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
-def main():
-	my_map = createDungeon(20,20)
+def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None):
+	# Initialize
+	x = 20 if x == None else int(x)
+	y = 20 if y == None else int(y)
+	seed = 45 if seed == None else int(seed)
+	d_lmt = 4 if d_lmt == None else int(d_lmt)
+	a_lmt = 4 if a_lmt == None else int(a_lmt)
+	my_map = createDungeon(x,y,seed)
 	printDungeon(my_map)
-	my_map = refineDungeon(my_map, 4, 4)
+	my_map = refineDungeon(my_map, d_lmt, d_lmt)
 	printDungeon(my_map)
-	my_map = refineDungeon(my_map, 4, 4)
+	my_map = refineDungeon(my_map, d_lmt, d_lmt)
 	printDungeon(my_map)
 
 
 if __name__ == "__main__":
-	main()
+	args = sys.argv
+	try:
+		x = args[1]
+	except:
+		x = None
+	try:
+		y = args[2]
+	except:
+		y = None
+	try:
+		seed = args[3]
+	except:
+		seed = None
+	try:
+		d_lmt = args[4]
+	except:
+		d_lmt = None
+	try:
+		a_lmt = args[5]
+	except:
+		a_lmt = None
+	main(x, y, seed, d_lmt, a_lmt)
