@@ -1,4 +1,4 @@
-#Simple procedural generation of "dungeon maps"
+# Simple procedural generation of "dungeon maps"
 
 Basic proof of concept for a "cellular automata" model. No real refinement at this point.
 
@@ -14,7 +14,7 @@ It takes the following flags:
 * --reps *x*: the number of smoothing passes to take on the map. *x* must be a positive integer. Large values can significantly extend runtime.
 * --out: save the result to an image in the maps/ directory instead of printing it to the screen.
 
-###A note on width and height
+### A note on width and height
 
 If you use --out, width and height are in pixels.
 
