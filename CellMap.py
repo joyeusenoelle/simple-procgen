@@ -111,6 +111,12 @@ class CellMap:
 		else:
 			self.printScreen()	
 
+	def resetMap(self):
+		""" Resets the map to its initial state, allowing the user to experiment
+			with death/birth limits and number of repetitions on a single map.
+		"""
+		self.genmap = self.initial
+
 	def createMap(self):
 		""" Initializes an x by y grid.
 			x is width, y is height
