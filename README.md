@@ -18,4 +18,4 @@ It takes the following flags:
 
 If you use --out, width and height are in pixels.
 
-If you don't, height is lines of text, and width is measured in **chunks of two characters**; "--width 40" will produce a map 80 characters wide. This is because each "wall" cell is represented by a double **I** character and each "empty" cell is represented by a double space; in the font the developer uses, this makes maps where width and height are the same roughly square.
+If you don't, height is lines of text, and width is measured in **chunks of two characters**; "--width 40" will produce a map 80 characters wide. This is because each "wall" cell is represented by a double **I** character and each "empty" cell is represented by a double space; in the font the developer uses, this makes it so that if a map's width and height are the same, the map is roughly square.
