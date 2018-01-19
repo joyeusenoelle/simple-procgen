@@ -1,5 +1,5 @@
 import random as r
-import sys
+import sys, os
 from PIL import Image
 
 def createDungeon(x=None, y=None, seed=None):
@@ -90,6 +90,8 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None)
 		filename = []
 		for _ in range(16):
 			filename.append(r.choice(hexes))
+		if not os.path.exists("maps"):
+			os.makedirs("maps")
 		img.save('maps/{}.png'.format("".join(filename)))
 		print("Saved maps/{}.png".format("".join(filename)))
 
