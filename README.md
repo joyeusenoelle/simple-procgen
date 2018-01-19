@@ -14,9 +14,14 @@ It takes the following flags:
 * --reps *x*: the number of smoothing passes to take on the map. *x* must be a positive integer. Large values can significantly extend runtime.
 * --out: save the result to an image in the maps/ directory instead of printing it to the screen.
 * --color: uses random complementary colors in the saved image instead of black and white. *Does nothing if not used with the --out flag.*
+* --chunky: makes each cell 2x2 instead of 1x1. *Does nothing if not used with the --out flag.*
 
 ### A note on width and height
 
 If you use --out, width and height are in pixels.
 
 If you don't, height is lines of text, and width is measured in **chunks of two characters**; "--width 40" will produce a map 80 characters wide. This is because each "wall" cell is represented by a double **I** character and each "empty" cell is represented by a double space; in the font the developer uses, this makes it so that if a map's width and height are the same, the map is roughly square.
+
+### Chunky cells
+
+Smaller maps blown up to a larger size sometimes look better than larger maps, for some reason. The --chunky flag doubles the size of each cell, which makes the raw output twice as big and slightly more attractive. Use with caution on larger image sizes.

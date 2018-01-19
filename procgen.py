@@ -63,7 +63,7 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
-def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None, color=None):
+def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None, color=None, chunky=None):
 	# Initialize
 	x = 20 if x == None else int(x)
 	y = 20 if y == None else int(y)
@@ -73,6 +73,7 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None,
 	reps = 2 if reps == None else int(reps)
 	out = False if out == None else bool(out)
 	color = False if color == None else bool(color)
+	chunky = False if chunky == None else bool(chunky)
 	my_map = createDungeon(x,y,seed)
 	if not out:
 		printDungeon(my_map)
@@ -81,14 +82,24 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None,
 		if not out:
 			printDungeon(my_map)
 	if out:
-		img = Image.new("RGB",(x,y),(0,0,0))
+		if chunky:
+			true_x, true_y = x*2, y*2
+		else:
+			true_x, true_y = x, y
+		img = Image.new("RGB",(true_x,true_y),(0,0,0))
 		lst = []
 		c_wall = [r.randint(0,255), r.randint(0,255), r.randint(0,255)] if color else [0,0,0]
 		c_space = [255-x for x in c_wall]
-
-		for line in my_map:
-			for val in line:
-				lst.append(tuple(c_space) if val else tuple(c_wall))
+		if chunky:
+			for line in my_map:
+				for _ in range(2):
+					for val in line:
+						for _ in range(2):
+							lst.append(tuple(c_space) if val else tuple(c_wall))
+		else:
+			for line in my_map:
+				for val in line:
+					lst.append(tuple(c_space) if val else tuple(c_wall))
 		img.putdata(lst)
 		hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
 		filename = []
@@ -109,6 +120,7 @@ def parseArgs(args):
 		"--reps"   : 2,
 		"--out"    : False,
 		"--color"  : False,
+		"--chunky" : False,
 	}
 	for flag, default in flags.items():
 		if flag in args:
@@ -116,6 +128,8 @@ def parseArgs(args):
 				flags["--out"] = True
 			elif flag == "--color":
 				flags["--color"] = True
+			elif flag == "--chunky":
+				flags["--chunky"] = True
 			else:
 				flags[flag] = args[args.index(flag) + 1]
 	return flags
@@ -130,4 +144,5 @@ if __name__ == "__main__":
 		 flags["--birth"], 
 		 flags["--reps"],
 		 flags["--out"],
-		 flags["--color"])
+		 flags["--color"],
+		 flags["--chunky"])
