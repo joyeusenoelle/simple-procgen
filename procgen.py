@@ -63,7 +63,7 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
-def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None):
+def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None, color=None):
 	# Initialize
 	x = 20 if x == None else int(x)
 	y = 20 if y == None else int(y)
@@ -72,6 +72,7 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None)
 	a_lmt = 4 if a_lmt == None else int(a_lmt)
 	reps = 2 if reps == None else int(reps)
 	out = False if out == None else bool(out)
+	color = False if color == None else bool(color)
 	my_map = createDungeon(x,y,seed)
 	if not out:
 		printDungeon(my_map)
@@ -82,9 +83,12 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None)
 	if out:
 		img = Image.new("RGB",(x,y),(0,0,0))
 		lst = []
+		c_wall = [r.randint(0,255), r.randint(0,255), r.randint(0,255)] if color else [0,0,0]
+		c_space = [255-x for x in c_wall]
+
 		for line in my_map:
 			for val in line:
-				lst.append((0,0,0) if val else (255,255,255))
+				lst.append(tuple(c_space) if val else tuple(c_wall))
 		img.putdata(lst)
 		hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
 		filename = []
@@ -103,12 +107,15 @@ def parseArgs(args):
 		"--death"  : 4,
 		"--birth"  : 4,
 		"--reps"   : 2,
-		"--out"    : False
+		"--out"    : False,
+		"--color"  : False,
 	}
 	for flag, default in flags.items():
 		if flag in args:
 			if flag == "--out":
 				flags["--out"] = True
+			elif flag == "--color":
+				flags["--color"] = True
 			else:
 				flags[flag] = args[args.index(flag) + 1]
 	return flags
@@ -122,4 +129,5 @@ if __name__ == "__main__":
 		 flags["--death"], 
 		 flags["--birth"], 
 		 flags["--reps"],
-		 flags["--out"])
+		 flags["--out"],
+		 flags["--color"])

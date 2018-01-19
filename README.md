@@ -13,6 +13,7 @@ It takes the following flags:
 * --birth *x*: if an empty cell has more than this many wall cells surrounding it, it becomes a wall. *x* must be an integer from 1-8.
 * --reps *x*: the number of smoothing passes to take on the map. *x* must be a positive integer. Large values can significantly extend runtime.
 * --out: save the result to an image in the maps/ directory instead of printing it to the screen.
+* --color: uses random complementary colors in the saved image instead of black and white. *Does nothing if not used with the --out flag.*
 
 ### A note on width and height
 
