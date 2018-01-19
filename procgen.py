@@ -22,7 +22,7 @@ def createDungeon(x=None, y=None, seed=None):
 def refineDungeon(d_map, d_lmt=None, a_lmt=None):
 	""" Refines the grid.
 	"""
-	d_lmt = 3 if d_lmt == None else int(d_lmt)
+	d_lmt = 4 if d_lmt == None else int(d_lmt)
 	a_lmt = 4 if a_lmt == None else int(a_lmt)
 	new_map = []
 	for j in range(len(d_map)):
@@ -31,12 +31,12 @@ def refineDungeon(d_map, d_lmt=None, a_lmt=None):
 			x, y = i, j
 			n_count = countAliveNeighbors(d_map, x, y)
 			if d_map[y][x]:
-				if n_count <= d_lmt:
+				if n_count >= a_lmt:
 					new_line.append(False)
 				else:
 					new_line.append(True)
 			else:
-				if n_count >= a_lmt:
+				if n_count <= d_lmt:
 					new_line.append(True)
 				else:
 					new_line.append(False)
