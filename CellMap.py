@@ -115,7 +115,7 @@ class CellMap:
 		""" Resets the map to its initial state, allowing the user to experiment
 			with death/birth limits and number of repetitions on a single map.
 		"""
-		self.genmap = self.initial
+		self.genmap = list(self.initial)
 
 	def createMap(self):
 		""" Initializes an x by y grid.
@@ -137,7 +137,7 @@ class CellMap:
 				new_row.append(True if random.randint(1,99) <= seed else False)
 			new_map.append(new_row)
 		self.initial = new_map
-		self.genmap = self.initial
+		self.genmap = new_map
 
 	def smoothMap(self):
 		""" Refines the grid.
