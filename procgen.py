@@ -1,5 +1,6 @@
 import random as r
 import sys
+from PIL import Image
 
 def createDungeon(x=None, y=None, seed=None):
 	""" Initializes an x by y grid.
@@ -62,7 +63,7 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
-def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None):
+def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None):
 	# Initialize
 	x = 20 if x == None else int(x)
 	y = 20 if y == None else int(y)
@@ -70,11 +71,27 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None):
 	d_lmt = 4 if d_lmt == None else int(d_lmt)
 	a_lmt = 4 if a_lmt == None else int(a_lmt)
 	reps = 2 if reps == None else int(reps)
+	out = False if out == None else bool(out)
 	my_map = createDungeon(x,y,seed)
-	printDungeon(my_map)
+	if not out:
+		printDungeon(my_map)
 	for _ in range(reps):
 		my_map = refineDungeon(my_map, d_lmt, d_lmt)
-		printDungeon(my_map)
+		if not out:
+			printDungeon(my_map)
+	if out:
+		img = Image.new("RGB",(x,y),(0,0,0))
+		lst = []
+		for line in my_map:
+			for val in line:
+				lst.append((0,0,0) if val else (255,255,255))
+		img.putdata(lst)
+		hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+		filename = []
+		for _ in range(16):
+			filename.append(r.choice(hexes))
+		img.save('maps/{}.png'.format("".join(filename)))
+		print("Saved maps/{}.png".format("".join(filename)))
 
 def parseArgs(args):
 	flags = {
@@ -83,11 +100,15 @@ def parseArgs(args):
 		"--seed"   : 45,
 		"--death"  : 4,
 		"--birth"  : 4,
-		"--reps"   : 2
+		"--reps"   : 2,
+		"--out"    : False
 	}
 	for flag, default in flags.items():
 		if flag in args:
-			flags[flag] = args[args.index(flag) + 1]
+			if flag == "--out":
+				flags["--out"] = True
+			else:
+				flags[flag] = args[args.index(flag) + 1]
 	return flags
 
 if __name__ == "__main__":
@@ -98,4 +119,5 @@ if __name__ == "__main__":
 		 flags["--seed"], 
 		 flags["--death"], 
 		 flags["--birth"], 
-		 flags["--reps"])
+		 flags["--reps"],
+		 flags["--out"])
