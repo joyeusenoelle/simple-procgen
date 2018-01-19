@@ -6,7 +6,7 @@ def createDungeon(x=None, y=None, seed=None):
 	""" Initializes an x by y grid.
 		x is width, y is height
 		seed is the chance that a given cell will be "live" and should be an integer between 1-99.
-		If True is equivalent to "walkable", then lower seeds make more walls.
+		If True is equivalent to "wall", then higher seeds make more walls.
 	"""
 	x = 10 if x == None else int(x)
 	y = 10 if y == None else int(y)
@@ -15,7 +15,7 @@ def createDungeon(x=None, y=None, seed=None):
 	for j in range(y):
 		new_row = []
 		for i in range(x):
-			new_row.append(False if r.randint(1,99) > seed else True)
+			new_row.append(True if r.randint(1,99) <= seed else False)
 		new_map.append(new_row)
 	return new_map
 
@@ -31,14 +31,20 @@ def refineDungeon(d_map, d_lmt=None, a_lmt=None):
 			x, y = i, j
 			n_count = countAliveNeighbors(d_map, x, y)
 			if d_map[y][x]:
-				if n_count >= a_lmt:
+				# It's a wall.
+				if n_count < d_lmt:
+					# It has too few wall neighbors, so kill it.
 					new_line.append(False)
 				else:
+					# It has enough wall neighbors, so keep it.
 					new_line.append(True)
 			else:
-				if n_count <= d_lmt:
+				# It's a path.
+				if n_count > a_lmt:
+					# It has too many wall neighbors, so it becomes a wall.
 					new_line.append(True)
 				else:
+					# It's not too crowded, so it stays a path.
 					new_line.append(False)
 		new_map.append(new_line)
 	return new_map
@@ -51,8 +57,12 @@ def countAliveNeighbors(d_map, x, y):
 			if i == 0 and j == 0:
 				continue
 			if n_x < 0 or n_x >= len(d_map[j]) or n_y == 0 or n_y >= len(d_map):
+				# The target cell is at the edge of the map and this neighbor is off the edge.
+				# So we make this neighbor count as a wall.
 				count += 1
+				#pass
 			elif d_map[n_y][n_x]:
+				# This neighbor is on the map and is a wall.
 				count += 1
 	return count
 
@@ -60,12 +70,13 @@ def printDungeon(d_map, wall=None, path=None):
 	wall = "II" if wall == None else wall
 	path = "  " if path == None else path
 	for line in d_map:
-		print("".join([wall if x == True else path for x in line]))
+		print("".join([wall if x else path for x in line]))
 	print()
 
-def createImage(d_map, color=None, chunky=None):
+def createImage(d_map, color=None, chunky=None, fn=None):
 	color = False if color == None else bool(color)
 	chunky = False if chunky == None else bool(chunky)
+	fn = filename() if fn == None else fn
 	x, y = len(d_map[0]), len(d_map)
 	if chunky:
 		true_x, true_y = x*2, y*2
@@ -73,28 +84,33 @@ def createImage(d_map, color=None, chunky=None):
 		true_x, true_y = x, y
 	img = Image.new("RGB",(true_x,true_y),(0,0,0))
 	lst = []
+	# Walls are black by default
 	c_wall = [r.randint(0,255), r.randint(0,255), r.randint(0,255)] if color else [0,0,0]
+	# Paths are white by default
 	c_space = [255-x for x in c_wall]
 	if chunky:
 		for line in  d_map:
 			for _ in range(2):
 				for val in line:
 					for _ in range(2):
-						lst.append(tuple(c_space) if val else tuple(c_wall))
+						lst.append(tuple(c_wall) if val else tuple(c_space))
 	else:
 		for line in  d_map:
 			for val in line:
-				lst.append(tuple(c_space) if val else tuple(c_wall))
+				lst.append(tuple(c_wall) if val else tuple(c_space))
 	img.putdata(lst)
-	hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-	a_filename = []
-	for _ in range(16):
-		a_filename.append(r.choice(hexes))
-	filename = "".join(a_filename)
 	if not os.path.exists("maps"):
 		os.makedirs("maps")
-	img.save('maps/{}.png'.format(filename))
-	print("Saved maps/{}.png".format(filename))
+	img.save('maps/{}.png'.format(fn))
+	print("Saved maps/{}.png".format(fn))
+
+def filename():
+	hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+	fn = []
+	for _ in range(16):
+		fn.append(r.choice(hexes))
+	return "".join(fn)
+
 
 def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None, color=None, chunky=None):
 	# Initialize
@@ -108,6 +124,7 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None,
 	color = False if color == None else bool(color)
 	chunky = False if chunky == None else bool(chunky)
 	my_map = createDungeon(x,y,seed)
+	fn = filename()
 	for _ in range(reps):
 		my_map = refineDungeon(my_map, d_lmt, a_lmt)
 	if out:
