@@ -234,6 +234,12 @@ class CellMap:
 		img.save('maps/{}.png'.format(fn))
 		print("Saved maps/{}.png".format(fn))
 
+	def printArray(self):
+		print("[",end="\n")
+		for line in self.genmap:
+			print("\t{},".format(line))
+		print("]")
+
 
 def filename():
 	hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
