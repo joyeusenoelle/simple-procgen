@@ -4,6 +4,14 @@ Basic proof of concept for a "cellular automata" model. No real refinement at th
 
 Initial work based on [this tutorial](https://gamedevelopment.tutsplus.com/tutorials/generate-random-cave-levels-using-cellular-automata--gamedev-9664).
 
+## Installation
+
+This script requires the Pillow package. You can install it with
+
+`pip3 install Pillow`
+
+## Running
+
 It takes the following flags:
 
 * --width *x*: the width of the map. *x* must be a positive integer. See below.
