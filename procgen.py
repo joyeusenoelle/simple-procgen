@@ -62,41 +62,40 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
-def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None):
+def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None):
 	# Initialize
 	x = 20 if x == None else int(x)
 	y = 20 if y == None else int(y)
 	seed = 45 if seed == None else int(seed)
 	d_lmt = 4 if d_lmt == None else int(d_lmt)
 	a_lmt = 4 if a_lmt == None else int(a_lmt)
+	reps = 2 if reps == None else int(reps)
 	my_map = createDungeon(x,y,seed)
 	printDungeon(my_map)
-	my_map = refineDungeon(my_map, d_lmt, d_lmt)
-	printDungeon(my_map)
-	my_map = refineDungeon(my_map, d_lmt, d_lmt)
-	printDungeon(my_map)
+	for _ in range(reps):
+		my_map = refineDungeon(my_map, d_lmt, d_lmt)
+		printDungeon(my_map)
 
+def parseArgs(args):
+	flags = {
+		"--height" : 20,
+		"--width"  : 20,
+		"--seed"   : 45,
+		"--death"  : 4,
+		"--birth"  : 4,
+		"--reps"   : 2
+	}
+	for flag, default in flags.items():
+		if flag in args:
+			flags[flag] = args[args.index(flag) + 1]
+	return flags
 
 if __name__ == "__main__":
-	args = sys.argv
-	try:
-		x = args[1]
-	except:
-		x = None
-	try:
-		y = args[2]
-	except:
-		y = None
-	try:
-		seed = args[3]
-	except:
-		seed = None
-	try:
-		d_lmt = args[4]
-	except:
-		d_lmt = None
-	try:
-		a_lmt = args[5]
-	except:
-		a_lmt = None
-	main(x, y, seed, d_lmt, a_lmt)
+	flags = parseArgs(sys.argv)
+
+	main(flags["--width"], 
+		 flags["--height"], 
+		 flags["--seed"], 
+		 flags["--death"], 
+		 flags["--birth"], 
+		 flags["--reps"])
