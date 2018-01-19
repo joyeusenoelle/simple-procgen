@@ -4,6 +4,7 @@ from PIL import Image
 class CellMap:
 	initial = []
 	genmap = []
+	treasurelist = []
 
 	def __init__(self, height=None, width=None, seed=None, death=None, 
 				 birth=None, reps=0, out=None, color=None, chunky=None, 
@@ -107,6 +108,8 @@ class CellMap:
 		for _ in range(self.reps):
 			self.smoothMap()
 		if self.out:
+			if self.treasure:
+				self.generateTreasure()
 			self.createImage()
 		else:
 			self.printScreen()	
@@ -189,16 +192,28 @@ class CellMap:
 					# So we make this neighbor count as a wall.
 					count += 1
 					#pass
-				elif self.genmap[n_y][n_x]:
+				elif self.genmap[n_y][n_x] and self.genmap[n_y][n_x] != "Gold":
 					# This neighbor is on the map and is a wall.
 					count += 1
 		return count
 
+	def generateTreasure(self):
+		self.treasurelist = []
+		walledin = False
+		for j in range(len(self.genmap)):
+			for i in range(len(self.genmap[j])):
+				if not self.genmap[j][i]:
+					walledin = True if self.countWalls(i,j) >= 5 else False
+					if walledin:
+						self.genmap[j][i] = "Gold"
+						walledin = False
+
 	def printScreen(self):
 		wall = "II"
 		path = "  "
+		gold = "GG"
 		for line in self.genmap:
-			print("".join([wall if x else path for x in line]))
+			print("".join([path if not x else (gold if x == "Gold" else wall) for x in line]))
 		print()
 
 	def createImage(self):
@@ -213,16 +228,17 @@ class CellMap:
 		c_wall = [random.randint(0,255), random.randint(0,255), random.randint(0,255)] if self.color else [0,0,0]
 		# Paths are white by default
 		c_space = [255-x for x in c_wall]
+		c_gold = [(x+64)%255 for x in c_space]
 		if self.chunky:
 			for line in self.genmap:
 				for _ in range(2):
 					for val in line:
 						for _ in range(2):
-							lst.append(tuple(c_wall) if val else tuple(c_space))
+							lst.append(tuple(c_space) if not val else (tuple(c_gold) if val == "Gold" else tuple(c_wall)))
 		else:
 			for line in self.genmap:
 				for val in line:
-					lst.append(tuple(c_wall) if val else tuple(c_space))
+					lst.append(tuple(c_space) if not val else (tuple(c_gold) if val == "Gold" else tuple(c_wall)))
 		img.putdata(lst)
 		if not os.path.exists("maps"):
 			os.makedirs("maps")
