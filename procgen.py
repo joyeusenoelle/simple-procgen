@@ -63,6 +63,39 @@ def printDungeon(d_map, wall=None, path=None):
 		print("".join([wall if x == True else path for x in line]))
 	print()
 
+def createImage(d_map, color=None, chunky=None):
+	color = False if color == None else bool(color)
+	chunky = False if chunky == None else bool(chunky)
+	x, y = len(d_map[0]), len(d_map)
+	if chunky:
+		true_x, true_y = x*2, y*2
+	else:
+		true_x, true_y = x, y
+	img = Image.new("RGB",(true_x,true_y),(0,0,0))
+	lst = []
+	c_wall = [r.randint(0,255), r.randint(0,255), r.randint(0,255)] if color else [0,0,0]
+	c_space = [255-x for x in c_wall]
+	if chunky:
+		for line in  d_map:
+			for _ in range(2):
+				for val in line:
+					for _ in range(2):
+						lst.append(tuple(c_space) if val else tuple(c_wall))
+	else:
+		for line in  d_map:
+			for val in line:
+				lst.append(tuple(c_space) if val else tuple(c_wall))
+	img.putdata(lst)
+	hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+	a_filename = []
+	for _ in range(16):
+		a_filename.append(r.choice(hexes))
+	filename = "".join(a_filename)
+	if not os.path.exists("maps"):
+		os.makedirs("maps")
+	img.save('maps/{}.png'.format(filename))
+	print("Saved maps/{}.png".format(filename))
+
 def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None, color=None, chunky=None):
 	# Initialize
 	x = 20 if x == None else int(x)
@@ -75,40 +108,12 @@ def main(x=None, y=None, seed=None, d_lmt=None, a_lmt=None, reps=None, out=None,
 	color = False if color == None else bool(color)
 	chunky = False if chunky == None else bool(chunky)
 	my_map = createDungeon(x,y,seed)
-	if not out:
-		printDungeon(my_map)
 	for _ in range(reps):
-		my_map = refineDungeon(my_map, d_lmt, d_lmt)
-		if not out:
-			printDungeon(my_map)
+		my_map = refineDungeon(my_map, d_lmt, a_lmt)
 	if out:
-		if chunky:
-			true_x, true_y = x*2, y*2
-		else:
-			true_x, true_y = x, y
-		img = Image.new("RGB",(true_x,true_y),(0,0,0))
-		lst = []
-		c_wall = [r.randint(0,255), r.randint(0,255), r.randint(0,255)] if color else [0,0,0]
-		c_space = [255-x for x in c_wall]
-		if chunky:
-			for line in my_map:
-				for _ in range(2):
-					for val in line:
-						for _ in range(2):
-							lst.append(tuple(c_space) if val else tuple(c_wall))
-		else:
-			for line in my_map:
-				for val in line:
-					lst.append(tuple(c_space) if val else tuple(c_wall))
-		img.putdata(lst)
-		hexes = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-		filename = []
-		for _ in range(16):
-			filename.append(r.choice(hexes))
-		if not os.path.exists("maps"):
-			os.makedirs("maps")
-		img.save('maps/{}.png'.format("".join(filename)))
-		print("Saved maps/{}.png".format("".join(filename)))
+		createImage(my_map, color, chunky)
+	else:
+		printDungeon(my_map)
 
 def parseArgs(args):
 	flags = {
